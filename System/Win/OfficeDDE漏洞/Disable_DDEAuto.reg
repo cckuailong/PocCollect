@@ -1,0 +1,42 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_CURRENT_USER\Software\Microsoft\Office\16.0\Word\Options]
+ "DontUpdateLinks"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\Microsoft\Office\15.0\Word\Options]
+ "DontUpdateLinks"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\Microsoft\Office\14.0\Word\Options]
+ "DontUpdateLinks"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\Microsoft\Office\16.0\Word\Options\WordMail]
+ "DontUpdateLinks"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\Microsoft\Office\15.0\Word\Options\WordMail]
+ "DontUpdateLinks"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\Microsoft\Office\14.0\Word\Options\WordMail]
+ "DontUpdateLinks"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\Microsoft\Office\16.0\OneNote\Options]
+"DisableEmbeddedFiles"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\Microsoft\Office\15.0\OneNote\Options]
+"DisableEmbeddedFiles"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\Microsoft\Office\16.0\Excel\Options]
+ "DontUpdateLinks"=dword:00000001
+ "DDEAllowed"=dword:00000000
+ "DDECleaned"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\Microsoft\Office\15.0\Excel\Options]
+ "DontUpdateLinks"=dword:00000001
+ "DDEAllowed"=dword:00000000
+ "DDECleaned"=dword:00000001
+ "Options"=dword:00000117
+
+[HKEY_CURRENT_USER\Software\Microsoft\Office\14.0\Excel\Options]
+ "DontUpdateLinks"=dword:00000001
+ "DDEAllowed"=dword:00000000
+ "DDECleaned"=dword:00000001
+ "Options"=dword:00000117
