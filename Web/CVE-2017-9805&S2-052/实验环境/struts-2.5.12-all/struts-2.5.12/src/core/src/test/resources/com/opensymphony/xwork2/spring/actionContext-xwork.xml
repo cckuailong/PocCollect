@@ -1,0 +1,47 @@
+<!DOCTYPE xwork PUBLIC "-//Apache Struts//XWork 2.0//EN" "http://struts.apache.org/dtds/xwork-2.0.dtd">
+<xwork>
+	<bean type="com.opensymphony.xwork2.ObjectFactory" class="com.opensymphony.xwork2.spring.SpringObjectFactory" />
+	<constant name="applicationContextPath" value="com/opensymphony/xwork2/spring/actionContext-spring.xml" />
+    <constant name="struts.disallowProxyMemberAccess" value="true" />
+    <package name="default">
+        <result-types>
+            <result-type name="null" class="com.opensymphony.xwork2.mock.MockResult" default="true"/>
+            <result-type name="springResult" class="springResult" />
+            <result-type name="chain"
+                class="com.opensymphony.xwork2.ActionChainResult" />
+        </result-types>
+
+        <interceptors>
+            <interceptor name="chain"
+                class="com.opensymphony.xwork2.interceptor.ChainingInterceptor"/>
+            <interceptor name="params"
+                class="com.opensymphony.xwork2.interceptor.ParametersInterceptor"/>
+        </interceptors>
+
+		<action name="simpleAction" class="simple-action"/>
+
+        <action name="dependencyAction" class="dependency-action"/>
+
+        <action name="proxiedAction" class="proxied-action"/>
+
+        <action name="autoProxiedAction" class="auto-proxied-action"/>
+        
+        <action name="simpleActionSpringResult" class="simple-action">
+			<result name="error" type="springResult"/>
+		</action>
+
+        <action name="chainedAOPedTestBeanAction" class="pointcutted-test-bean"
+            method="getName">
+            <result name="WW-4105" type="chain">
+                <param name="actionName">chaintoAOPedTestSubBeanAction</param>
+            </result>
+        </action>
+        <action name="chaintoAOPedTestSubBeanAction" class="pointcutted-test-sub-bean"
+            method="getIssueId">
+            <interceptor-ref name="chain" />
+            <interceptor-ref name="params" />
+            <result name="WW-4105" type="null" />
+            <result name="S2-047" type="null" />
+        </action>
+    </package>
+</xwork>

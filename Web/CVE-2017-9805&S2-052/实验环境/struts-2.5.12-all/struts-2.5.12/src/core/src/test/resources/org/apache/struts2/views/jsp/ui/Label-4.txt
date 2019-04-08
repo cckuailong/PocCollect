@@ -1,0 +1,4 @@
+<tr>
+    <td class="tdLabel"><label for="foo" class="label">mylabel:</label></td>
+    <td class="tdInput"><label id="foo" for="for">output</label></td>
+</tr>
