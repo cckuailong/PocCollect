@@ -3,7 +3,7 @@
 import shodan
 #uesr configer
 
-API_KEY = "YokRfOEDBGu4jmxY8dbVJM9DU1KQ29jl"
+API_KEY = ""
 api = shodan.Shodan(API_KEY)
 
 try:
