@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Bug1043545 - Invalid CORS errors</title>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+</head>
+<body>
+
+This page tests the CORS problem <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1043545">https://bugzilla.mozilla.org/show_bug.cgi?id=1043545</a>.<br>
+
+<h1 id="result"></h1>
+
+<script type="application/javascript">
+$(document).ready(function(){
+	$("#result").html("Send Bad Request");
+	request(
+		"https://esfrontline.bugzilla.mozilla.org:443/does_not_exist/_mapping",  //FORCE A 404 (w RESTRICTIVE CORS HEADER)
+		function doneBadRequest(result){
+			console.info("result = "+result);
+			$("#result").html("Send Good Request");
+			request(
+				"https://esfrontline.bugzilla.mozilla.org:443/public_bugs/bug_version/_mapping", //LEGITIMATE
+				function doneGoodRequest(result){
+					console.info("result = "+result);
+					if (result != 200) {
+						$("#result").html("FAIL!!")
+					} else {
+						$("#result").html("PASS!!")
+					}
+				}
+			)
+		}
+	);
+});//method
+function request(url, callback){
+	var request = new XMLHttpRequest();
+	try {
+		request.open('GET', url);
+		request.isDone = false;
+		request.onreadystatechange = function(){
+			if (request.isDone) return;
+			if (request.readyState == 4){
+				request.isDone = true;
+				callback(request.status)
+			}//endif
+		};
+		request.send(null);
+	} catch (e) {
+		callback('error sending');
+	}//try
+}//function
+</script>
+
+</body>
+</html>
