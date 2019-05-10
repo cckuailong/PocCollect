@@ -1,3 +1,3 @@
 git add .
-git commit -m "init version"
+git commit -m "add some"
 git push origin master
